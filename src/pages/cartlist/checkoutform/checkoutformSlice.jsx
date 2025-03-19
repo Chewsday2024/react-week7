@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { pushMessages } from '../../../components/toast/toastSlice';
 
 
 
@@ -39,13 +40,19 @@ const checkoutformSlice = createSlice({
 
 
 
-export const checkoutCart = createAsyncThunk('checkoutform/checkoutCart', async (formInputValue) => {
-  await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, {
-    data: {
-      user: {...formInputValue},
-      message: formInputValue.message
-    }
-  });
+export const checkoutCart = createAsyncThunk('checkoutform/checkoutCart', async ( formInputValue, { dispatch }) => {
+  try {
+    const res = await axios.post(`${BASE_URL}/v2/api/${API_PATH}/order`, {
+      data: {
+        user: {...formInputValue},
+        message: formInputValue.message
+      }
+    });
+
+    dispatch(pushMessages(res.data));
+  } catch (err) {
+    dispatch(pushMessages(err.response.data));
+  }
 });
 
 
